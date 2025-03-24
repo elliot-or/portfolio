@@ -129,11 +129,11 @@
             // Variables for the falling text animation
             let fallingPosition = -100;
             let fallingVelocity = 0;
-            let gravity = 0.08;
+            let gravity = 0.06;
             let bounceCount = 0;
             let maxBounces = 2;
             let friction = 0.3;
-            let rotation = 0;
+            let rotation = 0.1;
             let rotationSpeed = 0.05;
             let targetRotation = 0;
             let rotationDamping = 0.05;
@@ -224,15 +224,15 @@
                     
                     // Apply transforms to all falling texts with offset positions
                     fallingText1.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
-                    fallingText1.style.top = `${fallingPosition}px`;
+                    fallingText1.style.top = `${fallingPosition + 20}px`;
                     fallingText1.style.left = '30%';
                     
                     fallingText2.style.transform = `translateX(-50%) rotate(${rotation * 0.8}deg)`;
-                    fallingText2.style.top = `${fallingPosition}px`;
+                    fallingText2.style.top = `${fallingPosition + 20}px`;
                     fallingText2.style.left = '50%';
                     
                     fallingText3.style.transform = `translateX(-50%) rotate(${rotation * 1.2}deg)`;
-                    fallingText3.style.top = `${fallingPosition}px`;
+                    fallingText3.style.top = `${fallingPosition + 20}px`;
                     fallingText3.style.left = '70%';
                 } else {
                     // Gradually level out to flat position
