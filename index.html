@@ -1,1 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background-color: #FFA07A;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial Black, Impact, sans-serif;
+            overflow: hidden;
+        }
 
+        /* Falling text styles */
+        #falling-text-1, #falling-text-2, #falling-text-3 {
+            color: #F5DEB3;
+            font-size: 3.5rem;
+            text-transform: uppercase;
+            position: absolute;
+            transform: translateX(-50%);
+            opacity: 0;
+            line-height: 1;
+        }
+
+        /* Animation */
+        @keyframes floating {
+            0% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(5px) translateX(2px); }
+            50% { transform: translateY(0) translateX(3px); }
+            75% { transform: translateY(-5px) translateX(1px); }
+            100% { transform: translateY(0) translateX(0); }
+        }
+        
+        .welcome-text {
+            text-align: center;
+            font-weight: bold;
+            font-size: 4rem;
+            letter-spacing: 2px;
+            position: relative;
+            text-transform: uppercase;
+            font-style: italic;
+            display: block;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .welcome-item:hover {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        .welcome-container {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Enter door */
+        .door {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 90px;
+            background-color: #000;
+            border-radius: 25px 25px 0 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            z-index: 10;
+        }
+
+        .door:hover {
+            transform: scale(1.1);
+        }
+
+        .door-text {
+            color: white;
+            transform: rotate(90deg);
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .aligned-position {
+            transition: all 1.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <h1 id="welcome-text-1" class="welcome-text welcome-item">Welcoming</h1>
+        <h1 id="welcome-text-2" class="welcome-text welcome-item">All</h1>
+    </div>
+    <h1 id="falling-text-1">To</h1>
+    <h1 id="falling-text-2">Free</h1>
+    <h1 id="falling-text-3">Fall</h1>
+    
+    <div class="door" onclick="window.location.href='portfolio.html'">
+        <div class="door-text">Enter</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const welcomeText1 = document.getElementById('welcome-text-1');
+            const welcomeText2 = document.getElementById('welcome-text-2');
+            const fallingText1 = document.getElementById('falling-text-1');
+            const fallingText2 = document.getElementById('falling-text-2');
+            const fallingText3 = document.getElementById('falling-text-3');
+            
+            // Animation variables for center text elements
+            let verticalPosition1 = 0;
+            let horizontalPosition1 = 0;
+            let verticalDirection1 = 1;
+            let horizontalDirection1 = 1;
+            
+            let verticalPosition2 = 0;
+            let horizontalPosition2 = 0;
+            let verticalDirection2 = -1;
+            let horizontalDirection2 = -1;
+            
+            // Variables for the falling text animation
+            let fallingPosition = -100;
+            let fallingVelocity = 0;
+            let gravity = 0.08;
+            let bounceCount = 0;
+            let maxBounces = 2;
+            let friction = 0.3;
+            let rotation = 0;
+            let rotationSpeed = 0.05;
+            let targetRotation = 0;
+            let rotationDamping = 0.05;
+            let windowHeight, bottomEdge, restingTimeout;
+            let isResting = false;
+            let restingTime = 0;
+            const restingDuration = 180;
+            
+            // Calculate screen dimensions
+            function updateDimensions() {
+                windowHeight = window.innerHeight;
+                bottomEdge = windowHeight - 100;
+            }
+            
+            // Start the falling animation
+            function startFallingAnimation() {
+                fallingText1.style.opacity = 1;
+                fallingText2.style.opacity = 1;
+                fallingText3.style.opacity = 1;
+                fallingPosition = -100;
+                fallingVelocity = 0;
+                bounceCount = 0;
+                isResting = false;
+                restingTime = 0;
+                rotation = Math.random() * 6 - 3;
+                rotationSpeed = 0.05;
+                clearTimeout(restingTimeout);
+            }
+            
+            function animate() {
+                // Animation for "WELCOMING" and "ALL"
+                verticalPosition1 += 0.07 * verticalDirection1;
+                if (verticalPosition1 >= 5 || verticalPosition1 <= -5) {
+                    verticalDirection1 *= -1;
+                }
+                
+                horizontalPosition1 += 0.09 * horizontalDirection1;
+                if (horizontalPosition1 >= 3 || horizontalPosition1 <= -3) {
+                    horizontalDirection1 *= -1;
+                }
+                
+                verticalPosition2 += 0.08 * verticalDirection2;
+                if (verticalPosition2 >= 6 || verticalPosition2 <= -6) {
+                    verticalDirection2 *= -1;
+                }
+                
+                horizontalPosition2 += 0.1 * horizontalDirection2;
+                if (horizontalPosition2 >= 4 || horizontalPosition2 <= -4) {
+                    horizontalDirection2 *= -1;
+                }
+                
+                welcomeText1.style.transform = `translateY(${verticalPosition1}px) translateX(${horizontalPosition1}px)`;
+                welcomeText2.style.transform = `translateY(${verticalPosition2}px) translateX(${horizontalPosition2}px)`;
+                
+                // Straight fall with very subtle bounce
+                if (!isResting) {
+                    // Apply gentle gravity
+                    fallingVelocity += gravity;
+                    fallingPosition += fallingVelocity;
+                    
+                    // Apply rotation during fall
+                    rotation += rotationSpeed;
+                    rotationSpeed *= 0.99;
+                    
+                    // Check for bounce at bottom
+                    if (fallingPosition >= bottomEdge) {
+                        fallingPosition = bottomEdge;
+                        // Bounce with dampening
+                        fallingVelocity = -fallingVelocity * friction;
+                        bounceCount++;
+                        
+                        // Gentle rotation on impact
+                        const impactForce = Math.abs(fallingVelocity);
+                        const randomDirection = Math.random() > 0.5 ? 1 : -1;
+                        const bounceRotation = impactForce * 5 * randomDirection;
+                        rotation += bounceRotation * 0.3;
+                        rotationSpeed = impactForce * 0.8 * randomDirection;
+                        
+                        // Check for rest
+                        if (Math.abs(fallingVelocity) < 0.5) {
+                            fallingVelocity = 0;
+                            if (bounceCount >= maxBounces) {
+                                isResting = true;
+                                targetRotation = 0;
+                            }
+                        }
+                    }
+                    
+                    // Apply transforms to all falling texts with offset positions
+                    fallingText1.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+                    fallingText1.style.top = `${fallingPosition}px`;
+                    fallingText1.style.left = '30%';
+                    
+                    fallingText2.style.transform = `translateX(-50%) rotate(${rotation * 0.8}deg)`;
+                    fallingText2.style.top = `${fallingPosition - 20}px`;
+                    fallingText2.style.left = '50%';
+                    
+                    fallingText3.style.transform = `translateX(-50%) rotate(${rotation * 1.2}deg)`;
+                    fallingText3.style.top = `${fallingPosition + 20}px`;
+                    fallingText3.style.left = '70%';
+                } else {
+                    // Gradually level out to flat position
+                    const rotationDiff = targetRotation - rotation;
+                    rotation += rotationDiff * rotationDamping;
+                    
+                    fallingText1.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+                    fallingText2.style.transform = `translateX(-50%) rotate(${rotation * 0.8}deg)`;
+                    fallingText3.style.transform = `translateX(-50%) rotate(${rotation * 1.2}deg)`;
+                    
+                    // Count frames while resting
+                    restingTime++;
+                    if (restingTime >= restingDuration) {
+                        startFallingAnimation();
+                    }
+                }
+                
+                requestAnimationFrame(animate);
+            }
+            
+            // Initialize
+            updateDimensions();
+            window.addEventListener('resize', updateDimensions);
+            startFallingAnimation();
+            animate();
+        });
+    </script>
+</body>
+</html>
