@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio</title>
+    <style>
+        /* Hide scrollbars */
+        html, body {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            overflow-x: hidden;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar {
+            display: none;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: white;
+            min-height: 100vh;
+        }
+        
+        /* Main container */
+        .project-container {
+            padding: 120px 40px 60px;
+            position: relative;
+        }
+        
+        /* Project item */
+        .project {
+            position: absolute;
+            width: 180px;
+            cursor: pointer;
+        }
+        
+        /* Project title */
+        .project-title {
+            font-weight: bold;
+            font-size: 1rem;
+            text-transform: uppercase;
+            font-style: italic;
+            text-align: center;
+            transition: opacity 0.3s;
+        }
+        
+        /* Project image */
+        .project-image {
+            position: absolute;
+            width: 300px;
+            height: 200px;
+            object-fit: cover;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 1;
+        }
+        
+        /* Hover effect */
+        .project:hover .project-title {
+            opacity: 0;
+        }
+        
+        .project:hover .project-image {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .project:hover {
+            z-index: 100;
+        }
+        
+        /* Home door */
+        .home-door {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 50px;
+            height: 90px;
+            background-color: black;
+            border-radius: 25px 25px 25px 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            z-index: 1000;
+        }
+        
+        .door-text {
+            color: white;
+            transform: rotate(78deg);
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        
+        .home-door:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="project-container" id="project-container">
+        <!-- Projects will be added dynamically -->
+    </div>
+    
+    <div class="home-door">
+        <div class="door-text">Home</div>
+    </div>
+    
+    <script>
+        // Project data - just title and image
+        const projects = [
+            { id: "polycarbonate-lamp", title: "Polycarbonate Lamp", image: "images/polycarbonate-lamp.png" },
+            { id: "track-star-speakers", title: "Track Star Speakers", image: "images/track-star-speakers.png" },
+            { id: "kitchen-storage", title: "Kitchen Storage", image: "images/kitchen-storage.png" },
+            { id: "dancing-lofts", title: "Dancing Lofts", image: "images/dancing-lofts.png" },
+            { id: "friends", title: "Friends", image: "images/friends.png" },
+            { id: "cb-sauna", title: "CB Sauna", image: "images/cb-sauna.png" },
+            { id: "table-for-a-doctor", title: "Table for a Doctor", image: "images/table-for-a-doctor.png" },
+            { id: "antelope-anemorph", title: "Antelope Anemorph", image: "images/antelope-anemorph.png" },
+            { id: "geometry-hatch-wireframe", title: "Geometry Hatch Wireframe", image: "images/geometry-hatch-wireframe.png" },
+            { id: "cow-chair", title: "Cow Chair", image: "Project-Icons/Cow Chair.png" },
+            { id: "maple-bench", title: "Maple Bench", image: "images/maple-bench.png" },
+            { id: "cold-bright-damp-and-sterile", title: "Cold Bright Damp and Sterile", image: "images/cold-bright-damp-and-sterile.png" },
+            { id: "la-vitesse", title: "La Vitesse", image: "images/la-vitesse.png" },
+            { id: "meat-models", title: "Meat Models", image: "images/meat-models.png" },
+            { id: "fragmented-nesting", title: "Fragmented Nesting", image: "images/fragmented-nesting.png" },
+            { id: "backyard-gymnastics", title: "Backyard Gymnastics", image: "images/backyard-gymnastics.png" },
+            { id: "death-valley-days", title: "Death Valley Days", image: "images/death-valley-days.png" },
+            { id: "loudspeakers", title: "Loudspeakers", image: "images/loudspeakers.png" },
+            { id: "camouflage-clarity", title: "Camouflage Clarity", image: "images/camouflage-clarity.png" },
+            { id: "digital-weave", title: "Digital Weave", image: "images/digital-weave.png" },
+            { id: "u-chair", title: "U Chair", image: "images/u-chair.png" },
+            { id: "beacon-lamp", title: "Beacon Lamp", image: "images/beacon-lamp.png" },
+            { id: "new-urban", title: "New Urban", image: "images/new-urban.png" },
+            { id: "units", title: "Units", image: "Project-Icons/Units.png" },
+            { id: "tower-noir", title: "Tower Noir", image: "images/tower-noir.png" },
+            { id: "aqua-firma", title: "Aqua Firma", image: "images/aqua-firma.png" },
+            { id: "ocean-drone", title: "Ocean Drone", image: "images/ocean-drone.png" },
+            { id: "synthetic-futures-lab", title: "Synthetic Futures Lab", image: "images/synthetic-futures-lab.png" },
+            { id: "mycelium-brick", title: "Mycelium Brick", image: "images/mycelium-brick.png" },
+            { id: "iceburg-shelter", title: "Iceburg Shelter", image: "images/iceburg-shelter.png" },
+            { id: "glu-lam-tbl", title: "Glu Lam Tbl", image: "images/glu-lam-tbl.png" },
+            { id: "triangulated-table", title: "Triangulated Table", image: "images/triangulated-table.png" }
+        ];
+        
+        // Simple function to position projects
+        function positionProjects() {
+            const container = document.getElementById('project-container');
+            container.innerHTML = '';
+            
+            const containerWidth = window.innerWidth - 80; // Account for padding
+            const containerHeight = window.innerHeight * 2; // Scrollable height
+            
+            // Shuffle projects for random order
+            const shuffledProjects = [...projects].sort(() => Math.random() - 0.5);
+            
+            // Placed rectangles to check for overlaps
+            const placedRects = [];
+            
+            // Project dimensions
+            const width = 180;
+            const height = 40;
+            const minSpacing = 40;
+            
+            // Position each project
+            shuffledProjects.forEach(project => {
+                let placed = false;
+                let attempts = 0;
+                let x, y, rect;
+                
+                // Try to find a non-overlapping position
+                while (!placed && attempts < 50) {
+                    // Random position with margins
+                    x = 40 + Math.random() * (containerWidth - width - 80);
+                    y = 120 + Math.random() * (containerHeight - height - 160);
+                    
+                    // Create rectangle for collision detection
+                    rect = {
+                        left: x,
+                        right: x + width,
+                        top: y,
+                        bottom: y + height
+                    };
+                    
+                    // Check for overlaps
+                    const overlaps = placedRects.some(placed => {
+                        return !(rect.right < placed.left - minSpacing || 
+                               rect.left > placed.right + minSpacing || 
+                               rect.bottom < placed.top - minSpacing || 
+                               rect.top > placed.bottom + minSpacing);
+                    });
+                    
+                    if (!overlaps) {
+                        placed = true;
+                    }
+                    
+                    attempts++;
+                }
+                
+                // Add to placed rectangles if found a position
+                if (placed) {
+                    placedRects.push(rect);
+                    
+                    // Create project element
+                    const projectElement = document.createElement('div');
+                    projectElement.className = 'project';
+                    projectElement.style.left = rect.left + 'px';
+                    projectElement.style.top = rect.top + 'px';
+                    
+                    // Create image
+                    const imageElement = document.createElement('img');
+                    imageElement.className = 'project-image';
+                    imageElement.src = project.image;
+                    imageElement.alt = project.title;
+                    imageElement.onerror = function() {
+                        this.src = 'images/placeholder.png';
+                    };
+                    
+                    // Create title
+                    const titleElement = document.createElement('div');
+                    titleElement.className = 'project-title';
+                    titleElement.textContent = project.title;
+                    
+                    // Add click event
+                    projectElement.addEventListener('click', function() {
+                        window.location.href = 'ERD-F/projects/' + project.id + '.html';
+                    });
+                    
+                    // Assemble
+                    projectElement.appendChild(imageElement);
+                    projectElement.appendChild(titleElement);
+                    container.appendChild(projectElement);
+                }
+            });
+            
+            // Set container height based on furthest project
+            if (placedRects.length > 0) {
+                const maxY = Math.max(...placedRects.map(r => r.bottom));
+                container.style.minHeight = (maxY + 100) + 'px';
+            }
+        }
+        
+        // Initialize
+        window.addEventListener('load', positionProjects);
+        window.addEventListener('resize', positionProjects);
+        
+        // Home door navigation
+        document.querySelector('.home-door').addEventListener('click', function() {
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
