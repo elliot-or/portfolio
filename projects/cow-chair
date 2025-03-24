@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Project</title>
+</head>
+<body>
+    <h1>Test Project Page</h1>
+    <p>This is a test to check if navigation works.</p>
+    <a href="../portfolio.html">Back to Portfolio</a>
+</body>
+</html>
