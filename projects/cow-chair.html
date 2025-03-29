@@ -1,201 +1,329 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Title</title>
-    <style>
-        /* Hide scrollbars */
-        html, body {
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            overflow-x: hidden;
-        }
-        html::-webkit-scrollbar, body::-webkit-scrollbar {
-            display: none;
-        }
-        
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: white;
-            color: black;
-        }
-        
-        .project-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 80px 20px;
-        }
-        
-        .project-title {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 40px;
-            text-transform: uppercase;
-            font-style: italic;
-        }
-        
-        .project-images {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-        
-        .project-image {
-            width: 100%;
-            height: auto;
-        }
-        
-        .project-description {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            max-width: 800px;
-        }
-        
-        /* Navigation doors */
-        .door-navigation {
-            position: fixed;
-            bottom: 20px;
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            gap: 60px;
-        }
-        
-        .door {
-            width: 50px;
-            height: 90px;
-            background-color: black;
-            border-radius: 25px 25px 0 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        
-        .door:hover {
-            transform: scale(1.1);
-        }
-        
-        .door-text {
-            color: white;
-            transform: rotate(90deg);
-            letter-spacing: 2px;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-        }
-        
-        .door-label {
-            position: absolute;
-            bottom: -30px;
-            color: #000;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            width: 100px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <div class="project-container">
-        <h1 class="project-title">Project Title</h1>
-        
-        <div class="project-images">
-            <img class="project-image" src="../images/project-image-1.jpg" alt="Project image 1">
-            <img class="project-image" src="../images/project-image-2.jpg" alt="Project image 2">
-            <!-- Add more images as needed -->
-        </div>
-        
-        <div class="project-description">
-            <p>Project description goes here. Write about the concept, materials, process, and any other relevant information about the project.</p>
-            
-            <p>You can add additional paragraphs as needed to fully describe the project. Include details about your design process, challenges faced, and solutions developed.</p>
-        </div>
-    </div>
+import React, { useState, useRef, useEffect } from 'react';
+import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const ProjectPage = () => {
+  const [expandedFrame, setExpandedFrame] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Project data
+  const projectTitle = "cow-chair";
+  
+  const frames = [
+    {
+      id: 'drawings',
+      title: 'Drawings',
+      images: [
+        { src: "/api/placeholder/800/600", alt: "Drawing 1" },
+        { src: "/api/placeholder/800/600", alt: "Drawing 2" },
+        { src: "/api/placeholder/800/600", alt: "Drawing 3" }
+      ]
+    },
+    {
+      id: 'models',
+      title: '3D Models',
+      images: [
+        { src: "/api/placeholder/800/600", alt: "3D Model 1" },
+        { src: "/api/placeholder/800/600", alt: "3D Model 2" }
+      ]
+    },
+    {
+      id: 'photos',
+      title: 'Photos',
+      images: [
+        { src: "/api/placeholder/800/600", alt: "Photo 1" },
+        { src: "/api/placeholder/800/600", alt: "Photo 2" },
+        { src: "/api/placeholder/800/600", alt: "Photo 3" },
+        { src: "/api/placeholder/800/600", alt: "Photo 4" }
+      ]
+    },
+    {
+      id: 'construction',
+      title: 'Construction',
+      images: [
+        { src: "/api/placeholder/800/600", alt: "Construction 1" },
+        { src: "/api/placeholder/800/600", alt: "Construction 2" },
+        { src: "/api/placeholder/800/600", alt: "Construction 3" }
+      ]
+    },
+    {
+      id: 'info',
+      title: 'Project Information',
+      content: `
+        <h3>Project Details</h3>
+        <p><strong>Client:</strong> Creative Spaces Inc.</p>
+        <p><strong>Location:</strong> San Francisco, CA</p>
+        <p><strong>Area:</strong> 2,500 sq ft</p>
+        <p><strong>Year:</strong> 2025</p>
+        <p><strong>Description:</strong> This innovative project combines sustainable materials with cutting-edge design principles to create a space that is both environmentally conscious and aesthetically striking.</p>
+        <p>The design incorporates natural lighting, passive ventilation, and locally sourced materials to minimize environmental impact while maximizing comfort and functionality.</p>
+      `
+    }
+  ];
+
+  // Generate random positions for frames
+  const generateRandomPositions = () => {
+    return frames.map(frame => {
+      // Random position within viewport bounds
+      const top = Math.floor(Math.random() * 50) + 15; // 15-65% from top
+      const left = Math.floor(Math.random() * 60) + 10; // 10-70% from left
+      // Random z-index for layering (1-10)
+      const zIndex = Math.floor(Math.random() * 10) + 1;
+      
+      return { top, left, zIndex };
+    });
+  };
+
+  // State for drag-and-drop functionality
+  const [positions, setPositions] = useState(generateRandomPositions());
+  const [activeFrame, setActiveFrame] = useState(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const containerRef = useRef(null);
+  const [draggedFrame, setDraggedFrame] = useState(null);
+  const [hasFrameMoved, setHasFrameMoved] = useState(false);
+  
+  // Regular click handler (for expanding frames)
+  const handleFrameClick = (e, frameId) => {
+    if (!hasFrameMoved) {
+      expandFrame(frameId);
+    }
+  };
+  
+  // Expand frame to view content
+  const expandFrame = (frameId, index = 0) => {
+    setExpandedFrame(frameId);
+    setCurrentIndex(index);
+  };
+
+  // Close expanded frame
+  const closeExpandedFrame = () => {
+    setExpandedFrame(null);
+    setCurrentIndex(0);
+  };
+
+  // Navigate between images
+  const navigateImage = (direction) => {
+    const frame = frames.find(f => f.id === expandedFrame);
+    if (!frame || !frame.images) return;
     
-    <!-- Navigation doors at bottom -->
-    <div class="door-navigation">
-        <div class="door next-project-door">
-            <div class="door-text">Next</div>
-            <div class="door-label">Next Project</div>
-        </div>
-        
-        <div class="door main-page-door">
-            <div class="door-text">Main</div>
-            <div class="door-label">projects</div>
-        </div>
-        
-        <div class="door mystery-door">
-            <div class="door-text">???</div>
-            <div class="door-label">Mystery</div>
-        </div>
-    </div>
+    const newIndex = direction === 'next' 
+      ? (currentIndex + 1) % frame.images.length 
+      : (currentIndex - 1 + frame.images.length) % frame.images.length;
     
-    <script>
-        // Get the ID of this project from the URL
-        function getProjectId() {
-            const path = window.location.pathname;
-            const filename = path.substring(path.lastIndexOf('/') + 1);
-            return filename.replace('.html', '');
-        }
+    setCurrentIndex(newIndex);
+  };
+
+  // Mouse down - start potential drag
+  const handleMouseDown = (e, index) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Get frame element position
+    const rect = e.currentTarget.getBoundingClientRect();
+    
+    // Calculate offset of mouse from the top-left of the frame
+    setDragOffset({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    });
+    
+    // Store which frame is being interacted with
+    setActiveFrame(index);
+    setDraggedFrame(null);
+    setHasFrameMoved(false);
+    
+    // Bring frame to front during interaction
+    setPositions(prevPositions => {
+      const newPositions = [...prevPositions];
+      newPositions[index] = {
+        ...newPositions[index],
+        zIndex: 20
+      };
+      return newPositions;
+    });
+  };
+  
+  // Mouse move - update frame position if dragging
+  const handleMouseMove = (e) => {
+    if (activeFrame === null || !containerRef.current) return;
+    
+    // If this is the first significant movement, mark that dragging has started
+    if (!hasFrameMoved) {
+      const movementSquared = 
+        Math.pow(e.movementX, 2) + 
+        Math.pow(e.movementY, 2);
         
-        // Load project title from URL
-        function loadProjectTitle() {
-            const projectId = getProjectId();
-            const title = projectId.split('-')
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ');
+      // Only consider it a drag if mouse moved more than 5px
+      if (movementSquared > 25) {
+        setHasFrameMoved(true);
+        setDraggedFrame(activeFrame);
+      }
+    }
+    
+    // Only update position if we've determined this is a drag operation
+    if (hasFrameMoved) {
+      // Get container dimensions
+      const containerRect = containerRef.current.getBoundingClientRect();
+      
+      // Calculate new position
+      const frameWidth = 240;
+      const frameHeight = 180;
+      
+      // Calculate position as percentages relative to container
+      const newLeft = ((e.clientX - containerRect.left - dragOffset.x) / containerRect.width) * 100;
+      const newTop = ((e.clientY - containerRect.top - dragOffset.y) / containerRect.height) * 100;
+      
+      // Constrain to container boundaries
+      const maxLeft = 100 - (frameWidth / containerRect.width) * 100;
+      const maxTop = 100 - (frameHeight / containerRect.height) * 100;
+      
+      const constrainedLeft = Math.max(0, Math.min(newLeft, maxLeft));
+      const constrainedTop = Math.max(0, Math.min(newTop, maxTop));
+      
+      // Update position
+      setPositions(prevPositions => {
+        const newPositions = [...prevPositions];
+        newPositions[activeFrame] = {
+          ...newPositions[activeFrame],
+          left: constrainedLeft,
+          top: constrainedTop
+        };
+        return newPositions;
+      });
+    }
+  };
+  
+  // Mouse up - end drag or process click
+  const handleMouseUp = (e) => {
+    if (activeFrame !== null) {
+      // After dragging, reset z-index
+      setPositions(prevPositions => {
+        const newPositions = [...prevPositions];
+        newPositions[activeFrame] = {
+          ...newPositions[activeFrame],
+          zIndex: 10
+        };
+        return newPositions;
+      });
+      
+      // If it was a click (no movement), handle click
+      if (!hasFrameMoved && draggedFrame === null) {
+        expandFrame(frames[activeFrame].id);
+      }
+      
+      // Reset all interaction states
+      setActiveFrame(null);
+      setDraggedFrame(null);
+      setHasFrameMoved(false);
+    }
+  };
+  
+  // Add and remove global event listeners
+  useEffect(() => {
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [activeFrame, dragOffset, hasFrameMoved]);
+
+  return (
+    <div className="min-h-screen bg-white p-8 relative overflow-hidden">
+      {/* Project Title */}
+      <h1 className="text-3xl font-bold text-center mb-16 relative z-20">{projectTitle}</h1>
+      
+      {expandedFrame ? (
+        // Expanded View
+        <div className="fixed inset-0 bg-white z-50 p-8">
+          <button 
+            onClick={closeExpandedFrame}
+            className="absolute top-4 left-4 p-2 hover:bg-gray-100"
+          >
+            <X size={24} />
+          </button>
+          
+          {frames.find(f => f.id === expandedFrame).images ? (
+            // Image Gallery
+            <div className="h-full flex flex-col items-center justify-center">
+              <div className="relative w-full h-4/5 flex items-center justify-center">
+                <button 
+                  onClick={() => navigateImage('prev')}
+                  className="absolute left-4 p-4 bg-white shadow-lg hover:bg-gray-100"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+                
+                <div className="max-h-full max-w-full overflow-hidden flex items-center justify-center">
+                  <img 
+                    src={frames.find(f => f.id === expandedFrame).images[currentIndex].src} 
+                    alt={frames.find(f => f.id === expandedFrame).images[currentIndex].alt}
+                    className="max-h-full max-w-full object-contain"
+                  />
+                </div>
+                
+                <button 
+                  onClick={() => navigateImage('next')}
+                  className="absolute right-4 p-4 bg-white shadow-lg hover:bg-gray-100"
+                  aria-label="Next image"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              </div>
+              
+              <div className="mt-4 text-lg font-medium">
+                {currentIndex + 1} / {frames.find(f => f.id === expandedFrame).images.length}
+              </div>
+            </div>
+          ) : (
+            // Content (for Project Information)
+            <div className="max-w-3xl mx-auto mt-12">
+              <div 
+                dangerouslySetInnerHTML={{ __html: frames.find(f => f.id === expandedFrame).content }} 
+                className="prose prose-lg"
+              />
+            </div>
+          )}
+        </div>
+      ) : (
+        // Floating Frames Layout
+        <div className="relative h-screen" ref={containerRef}>
+          {frames.map((frame, index) => {
+            const position = positions[index];
             
-            document.title = title;
-            document.querySelector('.project-title').textContent = title;
-        }
-        
-        // Function to get a random project ID (not the current one)
-        function getRandomProject() {
-            const projectIds = [
-                "polycarbonate-lamp", "track-star-speakers", "kitchen-storage", 
-                "dancing-lofts", "friends", "cb-sauna", "table-for-a-doctor", 
-                "antelope-anemorph", "geometry-hatch-wireframe", "cow-chair", 
-                "maple-bench", "cold-bright-damp-and-sterile", "la-vitesse", 
-                "meat-models", "fragmented-nesting", "backyard-gymnastics", 
-                "death-valley-days", "loudspeakers", "camouflage-clarity", 
-                "digital-weave", "u-chair", "beacon-lamp", "new-urban", 
-                "units", "tower-noir", "aqua-firma", "ocean-drone", 
-                "synthetic-futures-lab", "mycelium-brick", "iceburg-shelter", 
-                "glu-lam-tbl", "triangulated-table"
-            ];
-            
-            const currentId = getProjectId();
-            const filteredIds = projectIds.filter(id => id !== currentId);
-            const randomIndex = Math.floor(Math.random() * filteredIds.length);
-            
-            return filteredIds[randomIndex];
-        }
-        
-        // Add navigation for the doors
-        document.querySelector('.next-project-door').addEventListener('click', function() {
-            const nextProject = getRandomProject();
-            window.location.href = nextProject + '.html';
-        });
-        
-        document.querySelector('.main-page-door').addEventListener('click', function() {
-            window.location.href = '../projects.html';
-        });
-        
-        document.querySelector('.mystery-door').addEventListener('click', function() {
-            alert('Mystery door clicked! This could lead to a special page.');
-            // Replace this with your desired destination
-            // window.location.href = '../mystery.html';
-        });
-        
-        // Initialize page
-        window.addEventListener('load', loadProjectTitle);
-    </script>
-</body>
-</html>
+            return (
+              <div 
+                key={frame.id}
+                className="absolute bg-white shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
+                style={{
+                  top: `${position.top}%`,
+                  left: `${position.left}%`,
+                  zIndex: activeFrame === index ? 20 : position.zIndex,
+                  width: '240px',
+                  height: frame.images ? '180px' : '160px',
+                  cursor: activeFrame === index && hasFrameMoved ? 'move' : 'pointer'
+                }}
+                onMouseDown={(e) => handleMouseDown(e, index)}
+              >
+                {frame.images ? (
+                  <div className="w-full h-full overflow-hidden">
+                    <img 
+                      src={frame.images[0].src} 
+                      alt={frame.images[0].alt}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="p-6 w-full h-full bg-gray-50 flex items-center justify-center">
+                    <p className="text-gray-600 text-center">Project Information</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
